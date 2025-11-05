@@ -174,15 +174,6 @@ Parabéns!!! 🎉🎶`;
 
     window.addEventListener('keydown', accelerateAndPlay);
     window.addEventListener('click', accelerateAndPlay);
-
-    btn.addEventListener('click', async () => {
-      if (music.paused) {
-        await startMusic();
-      } else {
-        music.pause();
-        btn.textContent = "🔊 Tocar música";
-      }
-    });
   </script>
 </body>
 </html>
