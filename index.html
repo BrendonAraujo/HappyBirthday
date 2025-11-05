@@ -101,12 +101,12 @@
       <pre id="output" class="output"></pre>
     </div>
 
-    <div class="hint">Pressione qualquer tecla ou clique para acelerar — e tocar a música 🎵</div>
+    <div class="hint">Clique ou pressione qualquer tecla para acelerar — e tocar a música 🎵</div>
 
     <div id="music-controls">
       <button id="toggleMusic">🔊 Tocar música</button>
-      <audio id="music" preload="auto" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2023/05/14/audio_d86a0f06b7.mp3?filename=happy-birthday-to-you-piano-14605.mp3" type="audio/mpeg">
+      <audio id="music" preload="auto" loop crossorigin="anonymous">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-happy-birthday-to-you-piano-1187.mp3" type="audio/mpeg">
         Seu navegador não suporta áudio.
       </audio>
     </div>
@@ -151,10 +151,18 @@ Parabéns!!! 🎉🎶`;
     }
     timer = setTimeout(typeNext, 600);
 
-    // Som
     const music = document.getElementById('music');
     const btn = document.getElementById('toggleMusic');
     let firstInteraction = false;
+
+    async function startMusic() {
+      try {
+        await music.play();
+        btn.textContent = "🔈 Pausar música";
+      } catch (e) {
+        console.warn("O navegador bloqueou o som. Tente clicar no botão.");
+      }
+    }
 
     function accelerateAndPlay() {
       if (!accelerated) {
@@ -163,21 +171,16 @@ Parabéns!!! 🎉🎶`;
       }
       if (!firstInteraction) {
         firstInteraction = true;
-        music.play().then(() => {
-          btn.textContent = "🔈 Pausar música";
-        }).catch(() => {
-          console.warn("Autoplay bloqueado até clique manual.");
-        });
+        startMusic();
       }
     }
 
     window.addEventListener('keydown', accelerateAndPlay);
     window.addEventListener('click', accelerateAndPlay);
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       if (music.paused) {
-        music.play();
-        btn.textContent = "🔈 Pausar música";
+        await startMusic();
       } else {
         music.pause();
         btn.textContent = "🔊 Tocar música";
