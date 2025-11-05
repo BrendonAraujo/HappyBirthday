@@ -30,7 +30,6 @@
       border: 1px solid rgba(255,255,255,0.03);
       padding: 18px;
       min-height: 360px;
-      position: relative;
       overflow: auto;
     }
     .titlebar {
@@ -39,10 +38,7 @@
       align-items: center;
       margin-bottom: 10px;
     }
-    .dots {
-      display: flex;
-      gap: 6px;
-    }
+    .dots { display: flex; gap: 6px; }
     .dot { width: 12px; height: 12px; border-radius: 50%; }
     .dot.red { background: #ff5f56; }
     .dot.yellow { background: #ffbd2e; }
@@ -105,7 +101,7 @@
       <pre id="output" class="output"></pre>
     </div>
 
-    <div class="hint">Pressione qualquer tecla para acelerar a digitação.</div>
+    <div class="hint">Pressione qualquer tecla ou clique para acelerar — e tocar a música 🎵</div>
 
     <div id="music-controls">
       <button id="toggleMusic">🔊 Tocar música</button>
@@ -117,16 +113,15 @@
   </div>
 
   <script>
-    // Texto digitado
     const text = `Oieee, esse código aqui é para poder te desejar feliz aniversário, parabééeens e tudo de bom para você hehe
 
-     i i i i i
-    |:H:a:p:p:y:|
-  __|___________|__
- |^^^^^^^^^^^^^^^^^|
- |:B:i:r:t:h:d:a:y:|
- |                 |
- ~~~~~~~~~~~~~~~~~~~
+       i i i i i
+     |:H:a:p:p:y:|
+   __|___________|__
+  |^^^^^^^^^^^^^^^^^|
+  |:B:i:r:t:h:d:a:y:|
+  |                 |
+  ~~~~~~~~~~~~~~~~~~~
     '------------'
         (~~~~~)
          )   (
@@ -140,9 +135,8 @@ Parabéns!!! 🎉🎶`;
 
     const out = document.getElementById('output');
     const speed = { normal: 28, fast: 4 };
-    let i = 0;
-    let currentSpeed = speed.normal;
-    let accelerated = false;
+    let i = 0, currentSpeed = speed.normal, accelerated = false;
+    let timer;
 
     function typeNext() {
       if (i < text.length) {
@@ -155,20 +149,31 @@ Parabéns!!! 🎉🎶`;
         out.appendChild(cursor);
       }
     }
-    let timer = setTimeout(typeNext, 600);
+    timer = setTimeout(typeNext, 600);
 
-    function accelerate() {
+    // Som
+    const music = document.getElementById('music');
+    const btn = document.getElementById('toggleMusic');
+    let firstInteraction = false;
+
+    function accelerateAndPlay() {
       if (!accelerated) {
         accelerated = true;
         currentSpeed = speed.fast;
       }
+      if (!firstInteraction) {
+        firstInteraction = true;
+        music.play().then(() => {
+          btn.textContent = "🔈 Pausar música";
+        }).catch(() => {
+          console.warn("Autoplay bloqueado até clique manual.");
+        });
+      }
     }
-    window.addEventListener('keydown', accelerate);
-    window.addEventListener('click', accelerate);
 
-    // Música
-    const music = document.getElementById('music');
-    const btn = document.getElementById('toggleMusic');
+    window.addEventListener('keydown', accelerateAndPlay);
+    window.addEventListener('click', accelerateAndPlay);
+
     btn.addEventListener('click', () => {
       if (music.paused) {
         music.play();
